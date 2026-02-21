@@ -1,0 +1,79 @@
+local_backend: true
+backend:
+  name: git-gateway
+  branch: main # Branch to update (optional; defaults to master)
+
+media_folder: "public/media" # Media files will be stored in the repo under public/media
+public_folder: "/media" # The src attribute for uploaded media will begin with /media
+
+collections:
+  - name: "about"
+    label: "About Section"
+    file: "src/content/about.json"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Content", name: "content", widget: "text"}
+
+  - name: "videos"
+    label: "Videos Section"
+    file: "src/content/videos.json"
+    extension: "json"
+    format: "json"
+    fields:
+      - label: "Videos List"
+        name: "items" # We need to wrap the array in an object for CMS file collections if it's the root, but decap handles array of objects in file collections slightly differently. Actually, a file collection with a list widget is best for arrays.
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "string"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - {label: "Media Path", name: "mediaPath", widget: "string", required: false}
+          - {label: "Media Type", name: "mediaType", widget: "select", options: ["image", "video"], default: "video"}
+
+  - name: "art"
+    label: "Art Section"
+    file: "src/content/art.json"
+    extension: "json"
+    format: "json"
+    fields:
+      - label: "Art List"
+        name: "items"
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "string"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - {label: "Media", name: "mediaPath", widget: "image", required: false}
+          - {label: "Media Type", name: "mediaType", widget: "select", options: ["image", "video"], default: "image"}
+
+  - name: "experiments"
+    label: "Experiments Section"
+    file: "src/content/experiments.json"
+    extension: "json"
+    format: "json"
+    fields:
+      - label: "Experiments List"
+        name: "items"
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "string"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - {label: "Media", name: "mediaPath", widget: "image", required: false}
+          - {label: "Media Type", name: "mediaType", widget: "select", options: ["image", "video"], default: "image"}
+
+  - name: "ideas"
+    label: "Ideas Section"
+    file: "src/content/ideas.json"
+    extension: "json"
+    format: "json"
+    fields:
+      - label: "Ideas List"
+        name: "items"
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "string"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+          - {label: "Media", name: "mediaPath", widget: "image", required: false}
+          - {label: "Media Type", name: "mediaType", widget: "select", options: ["image", "video"], default: "image"}

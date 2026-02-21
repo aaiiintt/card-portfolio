@@ -1,0 +1,102 @@
+/* App-specific styles */
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Canvas container */
+.dither-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.dither-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Pixel box hover effect */
+.pixel-box {
+  transition: transform 0.1s ease;
+}
+
+.pixel-box:hover {
+  transform: translateY(-2px);
+}
+
+/* Section header styling */
+.section-header {
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+
+/* Data row hover */
+.data-row:hover .data-value {
+  color: #6b8c42;
+}
+
+/* Barcode line animation */
+.barcode-line {
+  transition: height 0.2s ease;
+}
+
+/* Chunky button press effect */
+.chunky-btn:active {
+  transform: translate(4px, 4px) !important;
+  box-shadow: 0 0 0 var(--lcd-shadow) !important;
+}
+
+/* Tech item hover */
+.tech-item:hover {
+  background: #4d5338;
+  color: #e0e6cc;
+}
+
+/* Loading bar animation */
+@keyframes loading-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .font-display {
+    font-size: 0.8em;
+  }
+  
+  .pixel-box {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .section-header {
+    font-size: 12px;
+    padding: 10px 16px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --lcd-bg: #ffffff;
+    --lcd-dark: #000000;
+    --paper-cream: #ffffff;
+    --ink-warm: #000000;
+  }
+}
