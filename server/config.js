@@ -1,6 +1,6 @@
 export const DEFAULT_CONTENT = {
     site_config: {
-        siteName: "Josie's Portfolio",
+        siteName: "Card Portfolio",
         sections: [
             { id: 'about', displayName: 'About' },
             { id: 'videos', displayName: 'Videos' },
@@ -9,7 +9,7 @@ export const DEFAULT_CONTENT = {
             { id: 'ideas', displayName: 'Ideas' }
         ]
     },
-    about: { title: 'About Josie', content: 'Hi, I\'m Josie Tait.\n\nI am a director, editor and creative based in London.\n\nI work across video, art, and experimental digital projects.' },
+    about: { title: 'About', content: 'Hi, I\'m a creative based in London.\n\nI work across video, art, and experimental digital projects.' },
     videos: { items: [] },
     art: { items: [] },
     experiments: { items: [] },
@@ -26,4 +26,4 @@ if (!IS_LOCAL && !process.env.ADMIN_PASSWORD) {
 }
 
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'brownbunny'; // 'brownbunny' only applies to local dev now
-export const BUCKET_NAME = process.env.GCS_BUCKET || 'josie-portfolio-content';
+export const BUCKET_NAME = process.env.GCS_BUCKET || 'card-portfolio-content';

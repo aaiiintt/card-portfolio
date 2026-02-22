@@ -20,7 +20,7 @@ const DEFAULT_SECTIONS: SectionColorDef[] = [
   { id: 'ideas', label: 'IDEAS', color: 'var(--mint)', colorDeep: 'var(--mint-deep)' },
 ];
 
-export function ReceiptHeader({ siteName = 'JOSIE TAIT', sections = DEFAULT_SECTIONS }: ReceiptHeaderProps) {
+export function ReceiptHeader({ siteName = 'CARD PORTFOLIO', sections = DEFAULT_SECTIONS }: ReceiptHeaderProps) {
   return (
     <header className="site-header">
       {/* Site name */}

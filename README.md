@@ -37,8 +37,8 @@ A highly interactive, dynamic React portfolio backed by an integrated Express ad
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/aaiiintt/josie-gameboy-portfolio.git
-cd josie-gameboy-portfolio
+git clone https://github.com/aaiiintt/card-portfolio.git
+cd card-portfolio
 ```
 
 ### 2. Install Dependencies
@@ -120,7 +120,7 @@ The core design philosophy rests heavily on absolute user mutability. Using the 
 
 | Variable | Description | Example |
 | :--- | :--- | :--- |
-| `GCS_BUCKET` | The Google Cloud Storage bucket tracking your media. | `josie-portfolio-content` |
+| `GCS_BUCKET` | The Google Cloud Storage bucket tracking your media. | `card-portfolio-content` |
 | `ADMIN_PASSWORD` | The password required to manipulate the CMS. | `[Redacted]` |
 
 *(In local environments lacking an overarching `GCS_BUCKET` configuration, `server/config.js` intelligently forces Local Fallbacks mapping images and configs straight toward the `src/content/` files.)*
@@ -162,7 +162,7 @@ The pipeline will trigger automatically upon updating `main`:
       --region ${{ env.REGION }} \
       --platform managed \
       --allow-unauthenticated \
-      --set-env-vars "GCS_BUCKET=josie-portfolio-content,ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" \
+      --set-env-vars "GCS_BUCKET=card-portfolio-content,ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" \
       --project ${{ env.PROJECT_ID }}
 ```
 
@@ -172,10 +172,10 @@ You can validate exactly what Cloud Run executes locally.
 
 ```bash
 # Build the payload
-docker build -t josie/portfolio .
+docker build -t card/portfolio .
 
 # Execute isolated inside port 8080 targeting purely simulated Production flags
-docker run -p 8080:8080 -e NODE_ENV=production -e ADMIN_PASSWORD=localtest josie/portfolio
+docker run -p 8080:8080 -e NODE_ENV=production -e ADMIN_PASSWORD=localtest card/portfolio
 ```
 
 ---

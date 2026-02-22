@@ -36,7 +36,7 @@ import { chromium } from 'playwright';
 
   // Change Site name
   console.log("Changing site name...");
-  await page.fill('#settings-sitename', 'Josie Tait is the awesomest');
+  await page.fill('#settings-sitename', 'Card Portfolio is the awesomest');
   await page.click('button:has-text("Save Global Settings ✨")');
   await page.waitForTimeout(1000);
 
@@ -47,7 +47,7 @@ import { chromium } from 'playwright';
   const headerContent = await page.innerText('header a.font-display');
   console.log("React Site Header Extracted: ", headerContent);
 
-  if (headerContent.includes("Josie Tait is the awesomest")) {
+  if (headerContent.includes("Card Portfolio is the awesomest")) {
     console.log("✅ SUCCESS: Dynamic Config Pipeline works end to end!");
   } else {
     console.error("❌ FAILED: Header did not reflect new Settings state.");

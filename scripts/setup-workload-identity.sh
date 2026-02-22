@@ -24,7 +24,7 @@ set -e
 PROJECT_ID="aaiiintt"
 SA_NAME="github-actions"
 REPO_OWNER="aaiiintt"
-REPO_NAME="josie-gameboy-portfolio"
+REPO_NAME="card-portfolio"
 # === END CONFIGURATION ===
 
 # Get project number (required for workload identity provider path)

@@ -3,3 +3,10 @@ dist
 public/uploads
 public/backgrounds
 *.png
+.env
+.DS_Store
+.agents
+.agent
+.gemini
+skills
+skills-lock.json
