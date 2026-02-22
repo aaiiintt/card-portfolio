@@ -1,77 +1,77 @@
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import React, { useRef } from 'react';
 
 interface HorizontalScrollSectionProps {
-    title: string;
-    description?: string;
+    id: string;
+    backgroundSrc: string;
+    accentColor: string;
+    accentColorDeep: string;
     children: React.ReactNode;
 }
 
-export function HorizontalScrollSection({ title, description, children }: HorizontalScrollSectionProps) {
-    const sectionRef = useRef<HTMLElement>(null);
-    const titleRef = useRef<HTMLDivElement>(null);
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
+export function HorizontalScrollSection({
+    id,
+    backgroundSrc,
+    accentColor,
+    accentColorDeep,
+    children,
+}: HorizontalScrollSectionProps) {
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (titleRef.current) {
-            gsap.fromTo(titleRef.current,
-                { opacity: 0, y: 20 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.5,
-                    ease: 'power2.out',
-                    scrollTrigger: {
-                        trigger: titleRef.current,
-                        start: 'top 90%',
-                        toggleActions: 'play none none reverse'
-                    }
-                }
-            );
-        }
-    }, []);
-
-    const scroll = (direction: 'left' | 'right') => {
-        if (scrollContainerRef.current) {
-            const scrollAmount = window.innerWidth < 768 ? window.innerWidth * 0.85 : 474;
-            scrollContainerRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-        }
+    const scroll = (dir: 'left' | 'right') => {
+        if (!scrollRef.current) return;
+        const amount = window.innerWidth < 768 ? window.innerWidth * 0.85 : 480;
+        scrollRef.current.scrollBy({ left: dir === 'right' ? amount : -amount, behavior: 'smooth' });
     };
 
-    return (
-        <section id={title.toLowerCase()} ref={sectionRef} className="w-full py-12 relative overflow-hidden">
-            <div className="max-w-[1400px] mx-auto px-4 relative">
-                {/* Section Title & Arrows */}
-                <div ref={titleRef} className="mb-8 pl-4 flex justify-between items-end max-w-6xl mx-auto md:ml-0 md:mr-auto">
-                    <div>
-                        <div className="section-header inline-block">
-                            {title}
-                        </div>
-                        {description && (
-                            <p className="font-mono-receipt text-sm text-[#6b6b6b] mt-4 max-w-2xl">
-                                {description}
-                            </p>
-                        )}
-                    </div>
-                    {/* Navigation Arrows */}
-                    <div className="flex gap-2">
-                        <button onClick={() => scroll('left')} className="chunky-btn w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-[#4d5338] font-pixel text-xl md:text-2xl" aria-label="Scroll left">
-                            &lt;
-                        </button>
-                        <button onClick={() => scroll('right')} className="chunky-btn w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-[#4d5338] font-pixel text-xl md:text-2xl" aria-label="Scroll right">
-                            &gt;
-                        </button>
-                    </div>
-                </div>
+    const hasMultipleChildren = React.Children.count(children) > 1;
 
-                {/* Scrollable Container */}
-                <div className="relative group w-[100vw] -ml-4 pl-4 md:w-auto md:ml-0 md:pl-0">
-                    <div ref={scrollContainerRef} className="flex overflow-x-auto snap-x snap-mandatory pb-8 pt-4 px-4 cs-hide-scroll">
-                        {children}
+    return (
+        <section
+            id={id}
+            className="section-wrapper"
+            style={{ backgroundImage: `url(${backgroundSrc})` }}
+        >
+            {/* Spacer so illustration title is visible — roughly 38% of 16:9 height */}
+            <div className="w-full" style={{ paddingTop: 'min(38%, 340px)' }} />
+
+            {/* Cards area — sits below the illustrated title */}
+            <div className="flex-1 flex flex-col justify-end pb-8">
+                {/* Arrow buttons — top-right of card row */}
+                {hasMultipleChildren && (
+                    <div className="flex justify-end gap-2 px-6 mb-3">
+                        <button
+                            onClick={() => scroll('left')}
+                            className="scroll-btn"
+                            style={{ borderColor: accentColorDeep, boxShadow: `3px 3px 0 ${accentColorDeep}` }}
+                            aria-label="Scroll left"
+                        >
+                            ‹
+                        </button>
+                        <button
+                            onClick={() => scroll('right')}
+                            className="scroll-btn"
+                            style={{ borderColor: accentColorDeep, boxShadow: `3px 3px 0 ${accentColorDeep}` }}
+                            aria-label="Scroll right"
+                        >
+                            ›
+                        </button>
                     </div>
+                )}
+
+                {/* Horizontal scroll container */}
+                <div
+                    ref={scrollRef}
+                    className="flex overflow-x-auto hide-scroll py-4 snap-x snap-mandatory px-6 scroll-px-6 gap-4"
+                >
+                    {React.Children.map(children, (child) => (
+                        <div className="flex-shrink-0 snap-start" style={{ width: 'min(85vw, 440px)' }}>
+                            {React.isValidElement(child)
+                                ? React.cloneElement(child as React.ReactElement<{ accentColor?: string; accentColorDeep?: string }>, { accentColor, accentColorDeep })
+                                : child}
+                        </div>
+                    ))}
+                    {/* trailing spacer */}
+                    <div className="flex-shrink-0 w-2" />
                 </div>
             </div>
         </section>

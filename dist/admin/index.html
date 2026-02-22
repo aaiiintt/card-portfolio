@@ -1,12 +1,918 @@
 <!doctype html>
-<html>
+<html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Manager</title>
+  <title>Josie Tait — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --pink: #f4a7c3;
+      --pink-deep: #e07fa8;
+      --blue: #9bc4e8;
+      --blue-deep: #6aa5d4;
+      --lavender: #c4b5e8;
+      --lav-deep: #9c88d4;
+      --cream: #f9e4b7;
+      --cream-deep: #e8c97a;
+      --mint: #b5e8c4;
+      --mint-deep: #7acc96;
+      --dark: #3d3250;
+      --paper: #fefcf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Space Mono', monospace;
+      background: #fef6fb;
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ── Login ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    #login-screen h1 {
+      font-family: 'Nunito', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+    }
+
+    #login-screen input {
+      padding: 12px 16px;
+      border: 3px solid var(--dark);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      width: 260px;
+      background: var(--paper);
+      outline: none;
+    }
+
+    #login-screen button {
+      padding: 12px 32px;
+      background: var(--pink);
+      border: 3px solid var(--dark);
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--dark);
+      transition: transform .1s, box-shadow .1s;
+    }
+
+    #login-screen button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--dark);
+    }
+
+    #login-screen button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--dark);
+    }
+
+    #login-error {
+      color: var(--pink-deep);
+      font-size: .85rem;
+      display: none;
+    }
+
+    /* ── Admin shell ── */
+    #admin-shell {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: var(--dark);
+      color: white;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar h1 {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+
+    .topbar button {
+      padding: 6px 16px;
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, .4);
+      border-radius: 8px;
+      color: white;
+      font-family: 'Space Mono', monospace;
+      font-size: .75rem;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .topbar button:hover {
+      background: rgba(255, 255, 255, .15);
+    }
+
+    /* ── Tab bar ── */
+    .tab-bar {
+      background: var(--paper);
+      border-bottom: 3px solid var(--dark);
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      padding: 14px 20px;
+      border: none;
+      border-right: 2px solid var(--dark);
+      background: transparent;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: .85rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s;
+      color: var(--dark);
+      opacity: .6;
+    }
+
+    .tab-btn:hover {
+      background: #f0e8f4;
+      opacity: 1;
+    }
+
+    .tab-btn.active {
+      opacity: 1;
+      border-bottom: 3px solid var(--dark);
+      margin-bottom: -3px;
+    }
+
+    .tab-btn[data-section="about"].active {
+      background: #fde8f0;
+    }
+
+    .tab-btn[data-section="videos"].active {
+      background: #e8f4fd;
+    }
+
+    .tab-btn[data-section="art"].active {
+      background: #fef7e8;
+    }
+
+    .tab-btn[data-section="experiments"].active {
+      background: #f2eeff;
+    }
+
+    .tab-btn[data-section="ideas"].active {
+      background: #e8f8ec;
+    }
+
+    /* ── Content area ── */
+    .admin-content {
+      flex: 1;
+      padding: 24px;
+      max-width: 920px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    /* ── Form elements ── */
+    .field-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: .72rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid var(--dark);
+      border-radius: 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: .85rem;
+      background: var(--paper);
+      resize: vertical;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--pink-deep);
+    }
+
+    /* ── Background uploader ── */
+    .bg-uploader {
+      border: 3px dashed var(--dark);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+      background: var(--paper);
+    }
+
+    .bg-preview {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+      background: #e8e0f0;
+    }
+
+    .bg-preview.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      color: #888;
+      min-height: 120px;
+    }
+
+    .bg-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(61, 50, 80, .85));
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bg-upload-btn {
+      padding: 8px 18px;
+      background: white;
+      border: 2px solid var(--dark);
+      border-radius: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .bg-upload-btn:hover {
+      background: var(--pink);
+    }
+
+    .bg-label {
+      color: white;
+      font-size: .75rem;
+      opacity: .85;
+    }
+
+    .bg-status {
+      color: #b5e8c4;
+      font-size: .75rem;
+      margin-left: auto;
+    }
+
+    /* ── Save button ── */
+    .save-btn {
+      padding: 12px 28px;
+      border: 3px solid var(--dark);
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: .95rem;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--dark);
+      transition: transform .1s, box-shadow .1s;
+    }
+
+    .save-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--dark);
+    }
+
+    .save-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--dark);
+    }
+
+    .status-msg {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: .8rem;
+      display: none;
+    }
+
+    .status-msg.ok {
+      background: var(--mint);
+      border: 2px solid var(--mint-deep);
+      display: block;
+    }
+
+    .status-msg.err {
+      background: var(--pink);
+      border: 2px solid var(--pink-deep);
+      display: block;
+    }
+
+    /* ── Item cards ── */
+    .item-card {
+      background: var(--paper);
+      border: 2px solid var(--dark);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .item-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .item-number {
+      background: var(--dark);
+      color: white;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: .7rem;
+      font-weight: 700;
+    }
+
+    .remove-btn {
+      background: none;
+      border: 2px solid var(--dark);
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: .75rem;
+      font-family: inherit;
+      transition: background .15s;
+    }
+
+    .remove-btn:hover {
+      background: var(--pink);
+    }
+
+    .add-item-btn {
+      width: 100%;
+      padding: 12px;
+      border: 2px dashed var(--dark);
+      border-radius: 12px;
+      background: transparent;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: .9rem;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background .15s;
+    }
+
+    .add-item-btn:hover {
+      background: #f0e8f5;
+    }
+
+    /* ── Media uploader within card ── */
+    .media-uploader {
+      border: 2px dashed #bbb;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f9f7fc;
+      cursor: pointer;
+      transition: border-color .15s;
+      position: relative;
+    }
+
+    .media-uploader:hover {
+      border-color: var(--dark);
+    }
+
+    .media-uploader input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .media-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #ddd;
+      flex-shrink: 0;
+      border: 2px solid #ccc;
+    }
+
+    .media-thumb.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      background: #eee;
+    }
+
+    .media-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .media-name {
+      font-size: .75rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #555;
+      margin-bottom: 2px;
+    }
+
+    .media-upload-hint {
+      font-size: .7rem;
+      color: #999;
+    }
+
+    .media-type-badge {
+      font-size: .65rem;
+      background: var(--lavender);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Section divider ── */
+    .section-divider {
+      border: none;
+      border-top: 2px solid #e8e0f0;
+      margin: 24px 0;
+    }
+  </style>
 </head>
+
 <body>
-  <!-- Include the script that builds the page and powers Decap CMS -->
-  <script src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"></script>
+
+  <!-- Login -->
+  <div id="login-screen">
+    <div style="font-size:2.5rem">🌸</div>
+    <h1>Josie Tait Admin</h1>
+    <input type="password" id="pw-input" placeholder="Password" />
+    <button onclick="doLogin()">Enter ✨</button>
+    <div id="login-error">Wrong password — try again!</div>
+  </div>
+
+  <!-- Admin shell -->
+  <div id="admin-shell">
+    <div class="topbar">
+      <h1>🌸 Josie Tait — Admin</h1>
+      <button onclick="doLogout()">Log out</button>
+    </div>
+
+    <div class="tab-bar" id="tab-bar"></div>
+
+    <div class="admin-content" id="admin-content"></div>
+  </div>
+
+  <script>
+    // ── Config ──────────────────────────────────────────────────────────────
+    const SECTIONS = [
+      { id: 'about', label: '🌸 About', color: '#f4a7c3' },
+      { id: 'videos', label: '🎬 Videos', color: '#9bc4e8' },
+      { id: 'art', label: '🎨 Art', color: '#f9e4b7' },
+      { id: 'experiments', label: '🔬 Experiments', color: '#c4b5e8' },
+      { id: 'ideas', label: '💡 Ideas', color: '#b5e8c4' },
+    ];
+
+    // When accessed via Vite dev server (port 5173), talk to Express directly.
+    // In production, everything is on the same server so use relative paths.
+    const API = (window.location.hostname === 'localhost' && window.location.port !== '8080')
+      ? 'http://localhost:8080'
+      : '';
+
+    let token = localStorage.getItem('admin_token') || '';
+    let activeSection = SECTIONS[0].id;
+
+    // ── Auth ─────────────────────────────────────────────────────────────────
+    async function doLogin() {
+      const pw = document.getElementById('pw-input').value;
+      const res = await fetch(`${API}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw }),
+      });
+      if (res.ok) {
+        const { token: t } = await res.json();
+        token = t;
+        localStorage.setItem('admin_token', t);
+        document.getElementById('login-error').style.display = 'none';
+        showAdmin();
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    }
+
+    function doLogout() {
+      localStorage.removeItem('admin_token');
+      token = '';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('admin-shell').style.display = 'none';
+    }
+
+    document.getElementById('pw-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+
+    // Auto-login if token exists — verify it's still valid
+    if (token) {
+      fetch(`${API}/api/auth/verify`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => {
+          if (r.ok) showAdmin();
+          else doLogout();
+        })
+        .catch(() => doLogout());
+    }
+
+    // ── Upload helper ────────────────────────────────────────────────────────
+    async function uploadFile(file, endpoint = `${API}/api/upload`) {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      if (res.status === 401) {
+        doLogout();
+        alert("Session expired. Please log in again.");
+        throw new Error('Unauthorized');
+      }
+      if (!res.ok) throw new Error('Upload failed');
+      return (await res.json()).url;
+    }
+
+    // ── Build tabs ───────────────────────────────────────────────────────────
+    function buildTabs() {
+      const bar = document.getElementById('tab-bar');
+      bar.innerHTML = SECTIONS.map(s =>
+        `<button class="tab-btn${s.id === activeSection ? ' active' : ''}" data-section="${s.id}" onclick="switchTab('${s.id}')">${s.label}</button>`
+      ).join('');
+    }
+
+    function switchTab(id) {
+      activeSection = id;
+      buildTabs();
+      renderPanel(id);
+    }
+
+    // ── Render panel ─────────────────────────────────────────────────────────
+    async function renderPanel(section) {
+      const content = document.getElementById('admin-content');
+      content.innerHTML = '<p style="padding:20px;opacity:.5">Loading…</p>';
+      const data = await fetch(`${API}/api/content/${section}`).then(r => r.json());
+      const sectionCfg = SECTIONS.find(s => s.id === section);
+
+      if (section === 'about') {
+        content.innerHTML = renderAbout(data, sectionCfg);
+      } else {
+        content.innerHTML = renderList(section, data, sectionCfg);
+        // Wire up existing media pickers
+        wireMediaPickers(section, data);
+      }
+
+      // Wire background uploader
+      wireBgUploader(section, sectionCfg);
+    }
+
+    // ── Background uploader widget ───────────────────────────────────────────
+    function bgUploaderHtml(section, sectionCfg) {
+      return `
+        <div class="bg-uploader" id="bg-uploader-${section}">
+          <img id="bg-preview-${section}" class="bg-preview" 
+               src="/backgrounds/${section}.png" alt=""
+               onerror="this.style.display='none';document.getElementById('bg-empty-${section}').style.display='flex'"
+               onload="document.getElementById('bg-empty-${section}').style.display='none'">
+          <div id="bg-empty-${section}" class="bg-preview empty" style="display:none">
+            No background image yet
+          </div>
+          <div class="bg-overlay">
+            <label class="bg-upload-btn" for="bg-file-${section}">📁 Change Background</label>
+            <input type="file" id="bg-file-${section}" accept="image/*" style="display:none"
+                   onchange="handleBgUpload('${section}', this)">
+            <span class="bg-label">16:9 recommended · PNG, JPG, GIF, WebP</span>
+            <span class="bg-status" id="bg-status-${section}"></span>
+          </div>
+        </div>`;
+    }
+
+    function wireBgUploader(section, sectionCfg) {
+      // Nothing extra needed — onerror/onload handles the preview state
+    }
+
+    async function handleBgUpload(section, input) {
+      const file = input.files[0];
+      if (!file) return;
+      const status = document.getElementById(`bg-status-${section}`);
+      status.textContent = '⏳ Uploading…';
+      try {
+        const url = await uploadFile(file, `${API}/api/upload/background/${section}`);
+        // Update preview
+        const img = document.getElementById(`bg-preview-${section}`);
+        img.src = url + '?t=' + Date.now();
+        img.style.display = 'block';
+        document.getElementById(`bg-empty-${section}`).style.display = 'none';
+        status.textContent = '✅ Saved!';
+        setTimeout(() => status.textContent = '', 3000);
+      } catch {
+        status.textContent = '❌ Upload failed';
+      }
+    }
+
+    // ── About panel ──────────────────────────────────────────────────────────
+    function renderAbout(data, cfg) {
+      return `
+        <h2 style="font-family:'Nunito',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:20px">🌸 About Section</h2>
+        <p style="font-size:.75rem;color:#888;margin-bottom:16px">Background image for the About section:</p>
+        ${bgUploaderHtml('about', cfg)}
+        <hr class="section-divider">
+        <div class="field-group">
+          <label>Header Accent Color</label>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="color" id="about-color" value="${esc(data.accentColor || '#f4a7c3')}" style="width:40px;height:40px;padding:0;border:none;border-radius:4px;cursor:pointer;" onchange="document.getElementById('about-color-hex').value = this.value" />
+            <input type="text" id="about-color-hex" value="${esc(data.accentColor || '#f4a7c3')}" style="width:100px;font-family:monospace;padding:8px;border:1px solid #ccc;border-radius:4px;" oninput="document.getElementById('about-color').value = this.value" maxlength="7" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Display Title</label>
+          <input type="text" id="about-title" value="${esc(data.title || '')}" />
+        </div>
+        <div class="field-group">
+          <label>Bio Text</label>
+          <textarea id="about-content" rows="8">${esc(data.content || '')}</textarea>
+        </div>
+        <button class="save-btn" style="background:var(--pink)" onclick="saveAbout()">Save About ✨</button>
+        <div class="status-msg" id="about-status"></div>`;
+    }
+
+    async function saveAbout() {
+      setStatus('about-status', 'loading');
+      try {
+        const res = await fetch(`${API}/api/content/about`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            title: document.getElementById('about-title').value,
+            content: document.getElementById('about-content').value,
+            accentColor: document.getElementById('about-color-hex').value,
+          }),
+        });
+        if (res.status === 401) {
+          doLogout();
+          alert("Session expired. Please log in again.");
+          return;
+        }
+        setStatus('about-status', res.ok ? 'ok' : 'err', res.ok ? 'Saved! ✨' : 'Save failed');
+      } catch {
+        setStatus('about-status', 'err', 'Network error');
+      }
+    }
+
+    // ── List panels (videos / art / experiments / ideas) ─────────────────────
+    function renderList(section, data, cfg) {
+      const items = data.items || [];
+      const emoji = cfg.label.split(' ')[0];
+      const label = cfg.label.split(' ').slice(1).join(' ');
+      const color = cfg.color;
+
+      return `
+        <h2 style="font-family:'Nunito',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:20px">${emoji} ${label} Section</h2>
+        <p style="font-size:.75rem;color:#888;margin-bottom:16px">Background image for this section:</p>
+        ${bgUploaderHtml(section, cfg)}
+        <hr class="section-divider">
+        <div class="field-group">
+          <label>Header Accent Color</label>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="color" id="${section}-color" value="${esc(data.accentColor || color)}" style="width:40px;height:40px;padding:0;border:none;border-radius:4px;cursor:pointer;" onchange="document.getElementById('${section}-color-hex').value = this.value" />
+            <input type="text" id="${section}-color-hex" value="${esc(data.accentColor || color)}" style="width:100px;font-family:monospace;padding:8px;border:1px solid #ccc;border-radius:4px;" oninput="document.getElementById('${section}-color').value = this.value" maxlength="7" />
+          </div>
+        </div>
+        <p style="font-size:.75rem;color:#888;margin-bottom:16px">Portfolio items — drag an image or video onto each card:</p>
+        <div id="items-list-${section}">
+          ${items.map((item, i) => itemCardHtml(section, item, i)).join('')}
+        </div>
+        <button class="add-item-btn" onclick="addItem('${section}')">+ Add new item</button>
+        <button class="save-btn" style="background:${color}" onclick="saveList('${section}')">Save ${label} ✨</button>
+        <div class="status-msg" id="${section}-status"></div>`;
+    }
+
+    function itemCardHtml(section, item, index) {
+      const hasMedia = item.mediaPath && item.mediaPath.length > 0;
+      const isVideo = item.mediaType === 'video';
+      return `
+        <div class="item-card" id="item-${section}-${index}">
+          <div class="item-card-header">
+            <span class="item-number">#${index + 1}</span>
+            <button class="remove-btn" onclick="removeItem('${section}', ${index})">✕ Remove</button>
+          </div>
+          <label class="media-uploader" id="media-uploader-${section}-${index}" title="Click or drag a file here">
+            <input type="file" accept="image/*,video/*"
+                   onchange="handleMediaUpload('${section}', ${index}, this)"
+                   onclick="event.stopPropagation()">
+            ${isVideo
+          ? `<video id="media-preview-${section}-${index}" class="media-thumb" src="${esc(item.mediaPath)}" muted></video>`
+          : hasMedia
+            ? `<img id="media-preview-${section}-${index}" class="media-thumb" src="${esc(item.mediaPath)}" onerror="this.classList.add('empty');this.removeAttribute('src');this.textContent='🖼️'">`
+            : `<div id="media-preview-${section}-${index}" class="media-thumb empty">📁</div>`}
+            <div class="media-info">
+              <div class="media-name" id="media-name-${section}-${index}">${hasMedia ? item.mediaPath.split('/').pop() : 'No file yet — click to upload'}</div>
+              <div class="media-upload-hint">Image or video · up to 100 MB</div>
+            </div>
+            ${isVideo ? '<span class="media-type-badge">VIDEO</span>' : hasMedia ? '<span class="media-type-badge">IMAGE</span>' : ''}
+          </label>
+          <div class="field-group">
+            <label>Title</label>
+            <input type="text" id="title-${section}-${index}" value="${esc(item.title || '')}" />
+          </div>
+          <div class="field-group">
+            <label>Description</label>
+            <textarea id="desc-${section}-${index}" rows="3">${esc(item.description || '')}</textarea>
+          </div>
+          <input type="hidden" id="mediaPath-${section}-${index}" value="${esc(item.mediaPath || '')}">
+          <input type="hidden" id="mediaType-${section}-${index}" value="${esc(item.mediaType || 'image')}">
+          <input type="hidden" id="itemId-${section}-${index}" value="${esc(item.id || `${section}_${Date.now()}`)}">
+        </div>`;
+    }
+
+    function wireMediaPickers(section, data) {
+      // Media pickers are wired via inline onchange — nothing extra needed
+    }
+
+    async function handleMediaUpload(section, index, input) {
+      const file = input.files[0];
+      if (!file) return;
+      const uploader = document.getElementById(`media-uploader-${section}-${index}`);
+      const nameEl = document.getElementById(`media-name-${section}-${index}`);
+      const previewEl = document.getElementById(`media-preview-${section}-${index}`);
+      const pathInput = document.getElementById(`mediaPath-${section}-${index}`);
+      const typeInput = document.getElementById(`mediaType-${section}-${index}`);
+
+      nameEl.textContent = '⏳ Uploading…';
+      try {
+        const url = await uploadFile(file);
+        const isVideo = file.type.startsWith('video/');
+        pathInput.value = url;
+        typeInput.value = isVideo ? 'video' : 'image';
+        nameEl.textContent = file.name;
+
+        // Update preview
+        if (previewEl) {
+          previewEl.remove();
+        }
+        if (isVideo) {
+          const vid = document.createElement('video');
+          vid.id = `media-preview-${section}-${index}`;
+          vid.className = 'media-thumb';
+          vid.src = url;
+          vid.muted = true;
+          uploader.insertBefore(vid, uploader.querySelector('.media-info'));
+        } else {
+          const img = document.createElement('img');
+          img.id = `media-preview-${section}-${index}`;
+          img.className = 'media-thumb';
+          img.src = url;
+          uploader.insertBefore(img, uploader.querySelector('.media-info'));
+        }
+
+        // Update badge
+        const badge = uploader.querySelector('.media-type-badge');
+        if (badge) badge.remove();
+        const newBadge = document.createElement('span');
+        newBadge.className = 'media-type-badge';
+        newBadge.textContent = isVideo ? 'VIDEO' : 'IMAGE';
+        uploader.appendChild(newBadge);
+      } catch {
+        nameEl.textContent = '❌ Upload failed';
+      }
+    }
+
+    function addItem(section) {
+      const list = document.getElementById(`items-list-${section}`);
+      const index = list.querySelectorAll('.item-card').length;
+      const newItem = { id: `${section}_${Date.now()}`, title: '', description: '', mediaPath: '', mediaType: 'image' };
+      list.insertAdjacentHTML('beforeend', itemCardHtml(section, newItem, index));
+    }
+
+    function removeItem(section, index) {
+      const el = document.getElementById(`item-${section}-${index}`);
+      if (el) el.remove();
+      // Re-number remaining cards
+      const list = document.getElementById(`items-list-${section}`);
+      list.querySelectorAll('.item-card').forEach((card, i) => {
+        const numEl = card.querySelector('.item-number');
+        if (numEl) numEl.textContent = `#${i + 1}`;
+      });
+    }
+
+    function collectItems(section) {
+      const list = document.getElementById(`items-list-${section}`);
+      const cards = list.querySelectorAll('.item-card');
+      return Array.from(cards).map((card, i) => ({
+        id: card.querySelector(`[id^="itemId-${section}-"]`)?.value || `${section}_${i}`,
+        title: card.querySelector(`[id^="title-${section}-"]`)?.value || '',
+        description: card.querySelector(`[id^="desc-${section}-"]`)?.value || '',
+        mediaPath: card.querySelector(`[id^="mediaPath-${section}-"]`)?.value || '',
+        mediaType: card.querySelector(`[id^="mediaType-${section}-"]`)?.value || 'image',
+      }));
+    }
+
+    async function saveList(section) {
+      setStatus(`${section}-status`, 'loading');
+      try {
+        const items = collectItems(section);
+        const accentColor = document.getElementById(`${section}-color-hex`).value;
+        const res = await fetch(`${API}/api/content/${section}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ items, accentColor }),
+        });
+        if (res.status === 401) {
+          doLogout();
+          alert("Session expired. Please log in again.");
+          return;
+        }
+        setStatus(`${section}-status`, res.ok ? 'ok' : 'err', res.ok ? `Saved ${items.length} items ✨` : 'Save failed');
+      } catch {
+        setStatus(`${section}-status`, 'err', 'Network error');
+      }
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function esc(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function setStatus(id, type, msg = '') {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = 'status-msg';
+      if (type === 'loading') { el.textContent = '⏳ Saving…'; el.style.display = 'block'; }
+      else if (type === 'ok') { el.classList.add('ok'); el.textContent = msg; }
+      else if (type === 'err') { el.classList.add('err'); el.textContent = msg; }
+      if (type !== 'loading') setTimeout(() => { el.style.display = 'none'; el.className = 'status-msg'; }, 4000);
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────────────
+    function showAdmin() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-shell').style.display = 'flex';
+      buildTabs();
+      renderPanel(activeSection);
+    }
+  </script>
 </body>
+
 </html>

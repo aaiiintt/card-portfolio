@@ -4,15 +4,15 @@
       "id": "art_01",
       "title": "Glitch Portrait 01",
       "description": "Digital fragmentation study using bayer matrix dithering.",
-      "mediaPath": "",
+      "mediaPath": "/uploads/534f4d9f984cbf9e.gif",
       "mediaType": "image"
     },
     {
       "id": "art_02",
       "title": "Cybernetic Flora",
       "description": "Generative art piece blending organic shapes with mechanical textures.",
-      "mediaPath": "",
-      "mediaType": "image"
+      "mediaPath": "/uploads/2ff397ce1ef5f295.mov",
+      "mediaType": "video"
     },
     {
       "id": "art_03",
@@ -28,5 +28,6 @@
       "mediaPath": "",
       "mediaType": "image"
     }
-  ]
+  ],
+  "accentColor": "#fef056"
 }

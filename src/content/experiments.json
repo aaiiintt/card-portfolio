@@ -1,32 +1,33 @@
 {
   "items": [
     {
-      "id": "exp_01",
-      "title": "WebGL Shader Test",
-      "description": "Interactive water simulation using custom fragment shaders.",
+      "id": "experiments_1",
+      "title": "Projection Mapping",
+      "description": "A quick experiment I did. Yaaaaas!",
       "mediaPath": "",
       "mediaType": "video"
     },
     {
-      "id": "exp_02",
+      "id": "experiments_2",
       "title": "Audio Visualizer",
       "description": "Real-time audio reactive particle system built with Three.js.",
       "mediaPath": "",
       "mediaType": "video"
     },
     {
-      "id": "exp_03",
+      "id": "experiments_3",
       "title": "ASCII Art Generator",
       "description": "Tool that converts uploaded images into ASCII art using canvas pixel data.",
       "mediaPath": "",
       "mediaType": "image"
     },
     {
-      "id": "exp_04",
+      "id": "experiments_4",
       "title": "CSS Grid Playground",
       "description": "An interactive tool for visualizing complex CSS grid layouts.",
       "mediaPath": "",
       "mediaType": "image"
     }
-  ]
+  ],
+  "accentColor": "#73fcea"
 }

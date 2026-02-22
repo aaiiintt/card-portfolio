@@ -35,7 +35,7 @@ img {
 
 /* Section header styling */
 .section-header {
-  text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* Data row hover */
@@ -62,21 +62,25 @@ img {
 
 /* Loading bar animation */
 @keyframes loading-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .font-display {
-    font-size: 0.8em;
-  }
-  
+
   .pixel-box {
     margin-left: 0;
     margin-right: 0;
   }
-  
+
   .section-header {
     font-size: 12px;
     padding: 10px 16px;
@@ -85,7 +89,10 @@ img {
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }

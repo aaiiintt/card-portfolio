@@ -1,190 +1,202 @@
-import { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useState } from 'react';
 import { ReceiptHeader } from './sections/ReceiptHeader';
-
-
 import { HorizontalScrollSection } from './components/HorizontalScrollSection';
 import { PortfolioCard } from './components/PortfolioCard';
-
-import aboutData from './content/about.json';
-import videosData from './content/videos.json';
-import artData from './content/art.json';
-import experimentsData from './content/experiments.json';
-import ideasData from './content/ideas.json';
-
+import { PortfolioSection } from './components/PortfolioSection';
 import './App.css';
 
-gsap.registerPlugin(ScrollTrigger);
+import { API_BASE, SESSION_CACHE_BUSTER } from './config';
 
+// ── Section config ──────────────────────────────────────────────────────────
+const SECTIONS = [
+  {
+    id: 'about',
+    backgroundSrc: `${API_BASE}/backgrounds/about.png${SESSION_CACHE_BUSTER}`,
+    accentColor: '#f4a7c3',
+    accentColorDeep: '#e07fa8',
+  },
+  {
+    id: 'videos',
+    backgroundSrc: `${API_BASE}/backgrounds/videos.png${SESSION_CACHE_BUSTER}`,
+    accentColor: '#9bc4e8',
+    accentColorDeep: '#6aa5d4',
+  },
+  {
+    id: 'art',
+    backgroundSrc: `${API_BASE}/backgrounds/art.png${SESSION_CACHE_BUSTER}`,
+    accentColor: '#f9e4b7',
+    accentColorDeep: '#e8c97a',
+  },
+  {
+    id: 'experiments',
+    backgroundSrc: `${API_BASE}/backgrounds/experiments.png${SESSION_CACHE_BUSTER}`,
+    accentColor: '#c4b5e8',
+    accentColorDeep: '#9c88d4',
+  },
+  {
+    id: 'ideas',
+    backgroundSrc: `${API_BASE}/backgrounds/ideas.png${SESSION_CACHE_BUSTER}`,
+    accentColor: '#b5e8c4',
+    accentColorDeep: '#7acc96',
+  },
+];
 
-// Grid Background
-function GridBackground() {
-  return (
-    <div
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{
-        backgroundImage: `
-          linear-gradient(rgba(139, 149, 109, 0.2) 2px, transparent 2px),
-          linear-gradient(90deg, rgba(139, 149, 109, 0.2) 2px, transparent 2px)
-        `,
-        backgroundSize: '40px 40px',
-      }}
-    />
-  );
+// ── Types ────────────────────────────────────────────────────────────────────
+interface ContentItem {
+  id: string;
+  title: string;
+  description: string;
+  mediaPath?: string;
+  mediaType?: 'image' | 'video';
 }
 
-// Loading Screen
-function LoadingScreen({ onComplete }: { onComplete: () => void }) {
-  const [progress, setProgress] = useState(0);
-  const loadingRef = useRef<HTMLDivElement>(null);
+interface AboutContent {
+  title: string;
+  content: string;
+  accentColor?: string;
+}
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          if (loadingRef.current) {
-            gsap.to(loadingRef.current, {
-              opacity: 0,
-              duration: 0.5,
-              onComplete: () => onComplete()
-            });
-          }
-          return 100;
-        }
-        return prev + Math.random() * 20;
-      });
-    }, 80);
+interface SectionContent {
+  about?: AboutContent;
+  videos?: { items: ContentItem[], accentColor?: string };
+  art?: { items: ContentItem[], accentColor?: string };
+  experiments?: { items: ContentItem[], accentColor?: string };
+  ideas?: { items: ContentItem[], accentColor?: string };
+}
 
-    return () => clearInterval(interval);
-  }, [onComplete]);
-
+// ── Loading screen ───────────────────────────────────────────────────────────
+function LoadingScreen() {
   return (
     <div
-      ref={loadingRef}
-      className="fixed inset-0 z-[1000] flex flex-col items-center justify-center"
-      style={{ background: '#c4cfa1' }}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6"
+      style={{ background: '#fef6fb' }}
     >
-      <div className="pixel-box">
-        <div className="pixel-box-inner p-8 text-center">
-          <p className="font-display text-xl mb-6" style={{ color: '#4d5338' }}>
-            JOSIE // TAIT
-          </p>
-          <div className="w-56 h-6 border-4 border-[#4d5338] p-1 mb-4">
-            <div
-              className="h-full bg-[#6b8c42] transition-all duration-100"
-              style={{ width: `${Math.min(progress, 100)}%` }}
-            />
-          </div>
-          <p className="font-mono-receipt text-sm" style={{ color: '#6b6b6b' }}>
-            LOADING... {Math.min(Math.floor(progress), 100)}%
-          </p>
-        </div>
+      <p className="font-display text-base" style={{ color: 'var(--pink-deep)' }}>
+        JOSIE TAIT
+      </p>
+      <div
+        className="w-48 h-4 rounded-full overflow-hidden border-2"
+        style={{ borderColor: 'var(--pink-deep)', background: '#f9e4b7' }}
+      >
+        <div
+          className="loading-bar h-full animate-pulse"
+          style={{ background: 'var(--pink)', width: '70%' }}
+        />
       </div>
     </div>
   );
 }
 
-function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const mainRef = useRef<HTMLElement>(null);
+// ── App ──────────────────────────────────────────────────────────────────────
+export default function App() {
+  const [content, setContent] = useState<SectionContent>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for CMS admin route to bypass SPA fallback
-    if (window.location.pathname === '/admin' || window.location.pathname === '/admin/') {
+    // Check for CMS admin route
+    if (window.location.pathname.startsWith('/admin')) {
       window.location.href = '/admin/index.html';
       return;
     }
 
-    if (!isLoading && mainRef.current) {
-      ScrollTrigger.refresh();
-    }
-  }, [isLoading]);
+    const sections = ['about', 'videos', 'art', 'experiments', 'ideas'];
+    Promise.all(
+      sections.map((s) =>
+        fetch(`${API_BASE}/api/content/${s}`)
+          .then((r) => {
+            if (!r.ok) throw new Error(`${r.status}`);
+            return r.json();
+          })
+          .then((data) => [s, data] as [string, unknown])
+          .catch(() => [s, null] as [string, null])
+      )
+    ).then((results) => {
+      const merged: SectionContent = {};
+      results.forEach(([key, val]) => {
+        if (val) (merged as Record<string, unknown>)[key] = val;
+      });
+      setContent(merged);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) return <LoadingScreen />;
+
+  const about = content.about;
+
+  const sectionCfg = Object.fromEntries(SECTIONS.map((s) => [s.id, s]));
+
+  // Helper to calculate a deep variant of a hex color for borders/shadows
+  const getDeepColor = (hex?: string, fallback = '#000000') => {
+    if (!hex || !hex.startsWith('#') || hex.length !== 7) return fallback;
+    const r = Math.max(0, parseInt(hex.slice(1, 3), 16) - 40);
+    const g = Math.max(0, parseInt(hex.slice(3, 5), 16) - 40);
+    const b = Math.max(0, parseInt(hex.slice(5, 7), 16) - 40);
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
+
+  const headerSections = [
+    {
+      id: 'about', label: 'ABOUT',
+      color: about?.accentColor || sectionCfg['about'].accentColor,
+      colorDeep: about?.accentColor ? getDeepColor(about.accentColor) : sectionCfg['about'].accentColorDeep
+    },
+    {
+      id: 'videos', label: 'VIDEOS',
+      color: content.videos?.accentColor || sectionCfg['videos'].accentColor,
+      colorDeep: content.videos?.accentColor ? getDeepColor(content.videos.accentColor) : sectionCfg['videos'].accentColorDeep
+    },
+    {
+      id: 'art', label: 'ART',
+      color: content.art?.accentColor || sectionCfg['art'].accentColor,
+      colorDeep: content.art?.accentColor ? getDeepColor(content.art.accentColor) : sectionCfg['art'].accentColorDeep
+    },
+    {
+      id: 'experiments', label: 'EXPERIMENTS',
+      color: content.experiments?.accentColor || sectionCfg['experiments'].accentColor,
+      colorDeep: content.experiments?.accentColor ? getDeepColor(content.experiments.accentColor) : sectionCfg['experiments'].accentColorDeep
+    },
+    {
+      id: 'ideas', label: 'IDEAS',
+      color: content.ideas?.accentColor || sectionCfg['ideas'].accentColor,
+      colorDeep: content.ideas?.accentColor ? getDeepColor(content.ideas.accentColor) : sectionCfg['ideas'].accentColorDeep
+    },
+  ];
 
   return (
     <>
-      {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+      <ReceiptHeader sections={headerSections} />
 
-
-      <GridBackground />
-
-      <main
-        ref={mainRef}
-        className={`relative min-h-screen transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-        style={{ background: '#c4cfa1' }}
+      {/* ABOUT */}
+      <HorizontalScrollSection
+        {...sectionCfg['about']}
+        accentColor={about?.accentColor || sectionCfg['about'].accentColor}
+        accentColorDeep={about?.accentColor ? getDeepColor(about.accentColor) : sectionCfg['about'].accentColorDeep}
       >
-        <div className="relative z-10">
-          <ReceiptHeader />
+        <PortfolioCard
+          id="ABT"
+          title={about?.title ?? 'About'}
+          accentColor={about?.accentColor || sectionCfg['about'].accentColor}
+          accentColorDeep={about?.accentColor ? getDeepColor(about.accentColor) : sectionCfg['about'].accentColorDeep}
+        >
+          <div className="whitespace-pre-wrap">{about?.content}</div>
+        </PortfolioCard>
+      </HorizontalScrollSection>
 
-
-          <HorizontalScrollSection title="ABOUT">
-            <PortfolioCard id="ABT" title={aboutData.title}>
-              <div className="whitespace-pre-wrap">{aboutData.content}</div>
-            </PortfolioCard>
-          </HorizontalScrollSection>
-
-          <HorizontalScrollSection title="VIDEOS" description="Selected video work and showreels.">
-            {videosData.items.map((item, i) => (
-              <PortfolioCard
-                key={item.id}
-                id={`V${(i + 1).toString().padStart(2, '0')}`}
-                title={item.title}
-                mediaPath={item.mediaPath}
-                mediaType={item.mediaType as 'video' | 'image'}
-              >
-                {item.description}
-              </PortfolioCard>
-            ))}
-          </HorizontalScrollSection>
-
-          <HorizontalScrollSection title="ART" description="Digital, generative, and physical art explorations.">
-            {artData.items.map((item, i) => (
-              <PortfolioCard
-                key={item.id}
-                id={`A${(i + 1).toString().padStart(2, '0')}`}
-                title={item.title}
-                mediaPath={item.mediaPath}
-                mediaType={item.mediaType as 'video' | 'image'}
-              >
-                {item.description}
-              </PortfolioCard>
-            ))}
-          </HorizontalScrollSection>
-
-          <HorizontalScrollSection title="EXPERIMENTS" description="Code, shaders, and prototypes.">
-            {experimentsData.items.map((item, i) => (
-              <PortfolioCard
-                key={item.id}
-                id={`E${(i + 1).toString().padStart(2, '0')}`}
-                title={item.title}
-                mediaPath={item.mediaPath}
-                mediaType={item.mediaType as 'video' | 'image'}
-              >
-                {item.description}
-              </PortfolioCard>
-            ))}
-          </HorizontalScrollSection>
-
-          <HorizontalScrollSection title="IDEAS" description="Thoughts, notes, and works in progress.">
-            {ideasData.items.map((item, i) => (
-              <PortfolioCard
-                key={item.id}
-                id={`I${(i + 1).toString().padStart(2, '0')}`}
-                title={item.title}
-                mediaPath={item.mediaPath}
-                mediaType={item.mediaType as 'video' | 'image'}
-              >
-                {item.description}
-              </PortfolioCard>
-            ))}
-          </HorizontalScrollSection>
-
-        </div>
-      </main>
+      {/* Dynamic Portfolio Sections */}
+      {SECTIONS.filter(s => s.id !== 'about').map(section => {
+        const sectionData = (content as Record<string, any>)[section.id];
+        return (
+          <PortfolioSection
+            key={section.id}
+            config={Object.assign({}, section, {
+              accentColor: sectionData?.accentColor || section.accentColor,
+              accentColorDeep: sectionData?.accentColor ? getDeepColor(sectionData.accentColor) : section.accentColorDeep,
+            })}
+            data={sectionData}
+          />
+        );
+      })}
     </>
   );
 }
-
-export default App;

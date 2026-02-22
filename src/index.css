@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,24 +6,38 @@
 
 @layer base {
   :root {
-    /* Game Boy LCD / Paper color palette - softer, more cohesive */
-    --lcd-bg: #c4cfa1;
-    --lcd-dark: #8b956d;
-    --lcd-darker: #4d5338;
-    --lcd-light: #e0e6cc;
-    --lcd-shadow: #2d3122;
-    --paper-cream: #f5f2e8;
-    --paper-aged: #e8e4d5;
-    --ink-warm: #3d3d3d;
-    --ink-faded: #6b6b6b;
-    --accent-green: #6b8c42;
-    --accent-muted: #8fa876;
+    /* Kawaii pastel palette */
+    --pink: #f4a7c3;
+    --pink-deep: #e07fa8;
+    --blue: #9bc4e8;
+    --blue-deep: #6aa5d4;
+    --lavender: #c4b5e8;
+    --lav-deep: #9c88d4;
+    --cream: #f9e4b7;
+    --cream-deep: #e8c97a;
+    --mint: #b5e8c4;
+    --mint-deep: #7acc96;
+    --dark: #3d3250;
+    --paper: #fefcf8;
+    --paper-shadow: rgba(61, 50, 80, 0.15);
+
+    /* Section colour map */
+    --about-accent: var(--pink);
+    --about-accent-deep: var(--pink-deep);
+    --videos-accent: var(--blue);
+    --videos-accent-deep: var(--blue-deep);
+    --art-accent: var(--cream);
+    --art-accent-deep: var(--cream-deep);
+    --experiments-accent: var(--lavender);
+    --experiments-accent-deep: var(--lav-deep);
+    --ideas-accent: var(--mint);
+    --ideas-accent-deep: var(--mint-deep);
   }
 }
 
 @layer base {
   * {
-    @apply border-[var(--lcd-dark)];
+    box-sizing: border-box;
   }
 
   html {
@@ -31,230 +45,228 @@
   }
 
   body {
-    background: var(--lcd-bg);
-    color: var(--ink-warm);
+    background: #fef6fb;
+    color: var(--dark);
     font-family: 'Space Mono', monospace;
     overflow-x: hidden;
   }
 
   ::selection {
-    background: var(--accent-green);
-    color: var(--paper-cream);
+    background: var(--pink);
+    color: var(--paper);
   }
 }
 
 @layer components {
 
-  /* Main chunky display font */
+  /* ─────────────── Typography ─────────────── */
+
   .font-display {
     font-family: 'Press Start 2P', cursive;
     letter-spacing: 0.05em;
   }
 
-  /* Secondary pixel font */
-  .font-pixel {
-    font-family: 'VT323', monospace;
-    letter-spacing: 0.02em;
+  .font-body {
+    font-family: 'Nunito', sans-serif;
   }
 
-  /* Monospace for data */
-  .font-mono-receipt {
+  .font-mono {
     font-family: 'Space Mono', monospace;
   }
 
-  /* LCD Screen container */
-  .lcd-screen {
-    background: var(--lcd-bg);
-    border: 4px solid var(--lcd-darker);
+  /* ─────────────── Card ─────────────── */
+
+  .portfolio-card {
+    background: var(--paper);
+    border-radius: 12px;
+    border: 4px solid var(--dark);
     box-shadow:
-      inset 0 0 20px rgba(0, 0, 0, 0.1),
-      4px 4px 0 var(--lcd-shadow);
+      1px 1px 0 var(--dark),
+      2px 2px 0 var(--dark),
+      3px 3px 0 var(--dark),
+      4px 4px 0 var(--dark),
+      5px 5px 0 var(--dark),
+      6px 6px 0 var(--dark),
+      6px 6px 0 transparent,
+      6px 6px 0 transparent,
+      6px 6px 0 transparent;
+    /* 
+      The initial shadow extends 6px right/down. 
+      We need margin to ensure it doesn't get clipped by the scroll container.
+    */
+    margin-right: 6px;
+    margin-bottom: 6px;
+    transition: box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1;
+    position: relative;
   }
 
-  /* Paper card style */
-  .paper-card {
-    background: var(--paper-cream);
-    border: 3px solid var(--lcd-darker);
+  .portfolio-card:hover {
+    transform: translate(-3px, -3px);
+    /* Shadow expands by exactly the translation amount, pinning it in space */
     box-shadow:
-      4px 4px 0 var(--lcd-shadow),
-      inset 0 0 30px rgba(139, 149, 109, 0.1);
+      1px 1px 0 var(--dark),
+      2px 2px 0 var(--dark),
+      3px 3px 0 var(--dark),
+      4px 4px 0 var(--dark),
+      5px 5px 0 var(--dark),
+      6px 6px 0 var(--dark),
+      7px 7px 0 var(--dark),
+      8px 8px 0 var(--dark),
+      9px 9px 0 var(--dark);
+    z-index: 10;
   }
 
-  /* Chunky button style */
-  .chunky-btn {
-    background: var(--paper-cream);
-    border: 3px solid var(--lcd-darker);
-    box-shadow: 4px 4px 0 var(--lcd-shadow);
-    transition: all 0.1s ease;
+  .portfolio-card:active {
+    transform: translate(3px, 3px);
+    /* Shadow shrinks by exactly the translation amount, pinning it in space */
+    box-shadow:
+      1px 1px 0 var(--dark),
+      2px 2px 0 var(--dark),
+      3px 3px 0 var(--dark),
+      3px 3px 0 transparent,
+      3px 3px 0 transparent,
+      3px 3px 0 transparent,
+      3px 3px 0 transparent,
+      3px 3px 0 transparent,
+      3px 3px 0 transparent;
+    z-index: 10;
   }
 
-  .chunky-btn:hover {
+  /* Card accent header bar */
+  .card-header {
+    border-radius: 8px 8px 0 0;
+    padding: 12px 16px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.65rem;
+    color: var(--dark);
+    border-bottom: 4px solid var(--dark);
+    letter-spacing: 0.04em;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  /* ─────────────── Section wrapper ─────────────── */
+
+  .section-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-size: cover;
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─────────────── Scroll arrows ─────────────── */
+
+  .scroll-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 4px solid var(--btn-color, var(--dark));
+    background: var(--paper);
+    box-shadow:
+      1px 1px 0 var(--btn-color, var(--dark)),
+      2px 2px 0 var(--btn-color, var(--dark)),
+      3px 3px 0 var(--btn-color, var(--dark)),
+      4px 4px 0 var(--btn-color, var(--dark)),
+      4px 4px 0 transparent,
+      4px 4px 0 transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: box-shadow 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: var(--dark);
+    margin-right: 4px;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .scroll-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow:
+      1px 1px 0 var(--btn-color, var(--dark)),
+      2px 2px 0 var(--btn-color, var(--dark)),
+      3px 3px 0 var(--btn-color, var(--dark)),
+      4px 4px 0 var(--btn-color, var(--dark)),
+      5px 5px 0 var(--btn-color, var(--dark)),
+      6px 6px 0 var(--btn-color, var(--dark));
+    z-index: 10;
+  }
+
+  .scroll-btn:active {
     transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 var(--lcd-shadow);
+    box-shadow:
+      1px 1px 0 var(--btn-color, var(--dark)),
+      2px 2px 0 var(--btn-color, var(--dark)),
+      2px 2px 0 transparent,
+      2px 2px 0 transparent,
+      2px 2px 0 transparent,
+      2px 2px 0 transparent;
+    z-index: 10;
   }
 
-  .chunky-btn:active {
-    transform: translate(4px, 4px);
-    box-shadow: 0 0 0 var(--lcd-shadow);
+  /* ─────────────── Nav header ─────────────── */
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--paper);
+    border-bottom: 3px solid var(--dark);
+    box-shadow: 0 3px 0 var(--dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    gap: 16px;
   }
 
-  /* Dashed line separator */
+  .nav-link {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+    color: var(--dark);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .nav-link:hover {
+    border-color: var(--dark);
+  }
+
+  /* ─────────────── Scrollbar ─────────────── */
+
+  .hide-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .hide-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ─────────────── Loading screen ─────────────── */
+
+  .loading-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.1s ease;
+  }
+
+  /* ─────────────── Dashed divider ─────────────── */
+
   .dashed-line {
     border: none;
-    height: 4px;
-    background: repeating-linear-gradient(90deg,
-        var(--lcd-darker) 0px,
-        var(--lcd-darker) 12px,
-        transparent 12px,
-        transparent 20px);
-  }
-
-  /* Solid line separator */
-  .solid-line {
-    height: 4px;
-    background: var(--lcd-darker);
-  }
-
-  /* Pixel border box */
-  .pixel-box {
-    border: 4px solid var(--lcd-darker);
-    box-shadow:
-      4px 4px 0 var(--lcd-shadow),
-      inset 0 0 0 2px var(--paper-cream);
-    padding: 4px;
-  }
-
-  /* Inner content area */
-  .pixel-box-inner {
-    border: 2px solid var(--lcd-darker);
-    background: var(--paper-cream);
-  }
-
-  /* Section header style */
-  .section-header {
-    background: var(--lcd-darker);
-    color: var(--paper-cream);
-    padding: 12px 20px;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 14px;
-    letter-spacing: 0.1em;
-    box-shadow: 4px 4px 0 var(--lcd-shadow);
-  }
-
-  /* Data row style */
-  .data-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 2px dashed var(--lcd-dark);
-  }
-
-  .data-row:last-child {
-    border-bottom: none;
-  }
-
-  /* Label style */
-  .data-label {
-    color: var(--ink-faded);
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-  }
-
-  .data-value {
-    color: var(--ink-warm);
-    font-family: 'VT323', monospace;
-    font-size: 20px;
-  }
-
-  /* Barcode style */
-  .barcode-lines {
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
-    height: 50px;
-  }
-
-  .barcode-line {
-    background: var(--lcd-darker);
-    width: 4px;
-  }
-
-  /* Grid pattern background */
-  .grid-bg {
-    background-image:
-      linear-gradient(var(--lcd-dark) 1px, transparent 1px),
-      linear-gradient(90deg, var(--lcd-dark) 1px, transparent 1px);
-    background-size: 20px 20px;
-    background-position: center center;
+    border-top: 2px dashed var(--dark);
     opacity: 0.3;
-  }
-
-  /* Custom scrollbar class for cards */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--lcd-darker);
-    border: 2px solid var(--paper-cream);
-    border-radius: 4px;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-green);
-  }
-
-  /* Hide scrollbar for horizontal sections but keep functionality */
-  .cs-hide-scroll {
-    overflow-x: auto;
-    scrollbar-width: none;
-    /* Firefox */
-    -ms-overflow-style: none;
-    /* IE/Edge */
-  }
-
-  .cs-hide-scroll::-webkit-scrollbar {
-    display: none;
-    /* Chrome/Safari */
-  }
-}
-
-/* Canvas styling */
-.dither-canvas {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}
-
-/* Custom 3x large cursor for desktop */
-@media (pointer: fine) {
-  * {
-    cursor: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='M4 0l16 16.5-5 1.5 4 6-3 1.5-4-5.5-5 5z' fill='black' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E") 8 0, auto !important;
-  }
-
-  a,
-  button,
-  [role='button'],
-  input,
-  select,
-  textarea,
-  label,
-  a *,
-  button * {
-    cursor: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath fill='black' stroke='white' stroke-width='1.5' stroke-linejoin='round' d='M10,10 L10,3 A2,2 0 0,1 14,3 L14,9 L15,8 A2,2 0 0,1 19,8.5 L19,13 L21,15 L21,20 A3,3 0 0,1 18,23 L11,23 A4,4 0 0,1 7,19 L4,15 L6,13 L10,16'/%3E%3C/svg%3E") 20 6, pointer !important;
-  }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    margin: 8px 0;
   }
 }
