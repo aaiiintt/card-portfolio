@@ -1,4 +1,4 @@
-# Josie's Portfolio
+# Card Portfolio
 
 A highly interactive, dynamic React portfolio backed by an integrated Express admin panel. This system utilizes a bespoke JSON-powered Content Management System (CMS) that persists data either entirely locally for incredibly fast development or streams transparently into Google Cloud Storage for global production deployments.
 
