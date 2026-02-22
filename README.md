@@ -1,12 +1,13 @@
 # Card Portfolio
 
-A highly interactive, dynamic React portfolio backed by an integrated Express admin panel. This system utilizes a bespoke JSON-powered Content Management System (CMS) that persists data either entirely locally for incredibly fast development or streams transparently into Google Cloud Storage for global production deployments.
+A highly interactive, dynamic React portfolio backed by an integrated Express admin panel. This system utilizes a bespoke JSON-powered Content Management System (CMS) that persists data either entirely locally for incredibly fast development or streams transparently into Google Cloud Storage for global production deployments. It has been built and refined for a stunning visual delivery, functioning as a high-fidelity template.
 
 ## Key Features
 
 - **Interactive 3D Elements:** Leverages Three.js and `@react-three/fiber` alongside GSAP for deeply visceral and immersive animations.
 - **Dynamic Configuration & CMS:** A protected, built-in `/admin` dashboard that orchestrates drag-and-drop structural organization, dynamic top-level global settings (like site names and theme colors), and secure media file uploads.
 - **Lightweight Architecture:** Eliminates the need for Postgres or complex traditional databases. The repository manages data via local `.json` documents which map directly into isolated Cloud Storage buckets upon production deployment.
+- **Responsive "Card" Layout:** Mobile-friendly, elegantly spaced content layers that mimic a stack of visually continuous index cards.
 - **Zero-Downtime Deployment:** Includes configured GitHub Actions workflows for Workload Identity Federation building standard Docker containers directly to Google Cloud Run.
 
 ---
@@ -63,14 +64,14 @@ ADMIN_PASSWORD="supersecretpassword" npm run dev
 
 ### 4. Start Development Server
 
-The repository leverages `concurrently` to orchestrate both the Vite HMR server and the Express API. Start both using:
+The repository leverages `concurrently` to orchestrate both the Vite HMR server and the Express API server. Start both using:
 
 ```bash
 npm run dev
 ```
 
-- Open the Main Frontend Portfolio: [http://localhost:5173/](http://localhost:5173/)
-- Open the Admin Dashboard: [http://localhost:5173/admin/index.html](http://localhost:5173/admin/index.html) _(Requests the standard `ADMIN_PASSWORD` you provided on start)_
+- Open the **Main Frontend Portfolio**: [http://localhost:5173/](http://localhost:5173/)
+- Open the **Admin Dashboard**: [http://localhost:5173/admin/index.html](http://localhost:5173/admin/index.html) _(Provide the `ADMIN_PASSWORD` you provided on start)_
 
 ---
 
@@ -81,27 +82,28 @@ npm run dev
 ```
 ├── .github/          # GitHub Action Workflows for Cloud Run deployment 
 ├── public/           # Static global assets (Fonts, favicons, etc)
-│ └── admin/          # Admin Dashboard Vanilla JS / HTML shell
+│   └── admin/        # Admin Dashboard Vanilla JS / HTML shell
+├── scripts/          # Shell utilities, e.g. WIF config automation
 ├── server/           # Express Backend Logic
-│ ├── config.js       # Runtime evaluation flags and Default System Layouts
-│ ├── index.js        # Main express server entry point
-│ ├── routes/api.js   # Authorization checks, dynamic JSON CMS routing
-│ └── services/storage.js # Multiplexed module resolving Local vs Cloud Storage
+│   ├── config.js       # Runtime evaluation flags and Default System Layouts
+│   ├── index.js        # Main express server entry point
+│   ├── routes/api.js   # Authorization checks, dynamic JSON CMS routing
+│   └── services/storage.js # Multiplexed module resolving Local vs Cloud Storage
 ├── src/              # React Application 
-│ ├── components/     # UI Level Shared Components (Radix UI pieces)
-│ ├── content/        # The Local Sandbox Database (JSON files)
-│ ├── lib/            # Utility and helper functions
-│ ├── sections/       # Primary Route and Page structures (e.g., ReceiptHeader)
-│ ├── App.tsx         # The main iterative configuration tree logic
-│ └── main.tsx        # React mounting bootstrap
+│   ├── components/     # UI Level Shared Components (Radix UI pieces)
+│   ├── content/        # The Local Sandbox Database (JSON files)
+│   ├── lib/            # Utility and helper functions
+│   ├── sections/       # Primary Route and Page structures (e.g., ReceiptHeader)
+│   ├── App.tsx         # The main iterative configuration tree logic
+│   └── main.tsx        # React mounting bootstrap
 ├── Dockerfile        # The multi-stage lightweight build runner
 └── vite.config.ts    # Frontend routing and port mappings
 ```
 
 ### Request Lifecycle
 
-1. **User Client** pings `http://your-app/`.
-2. App performs a standard **Fetch** intercepting React context hitting `/api/content/site_config`.
+1. **User Client** accesses the React frontend.
+2. The App performs a standard **Fetch** intercepting React context hitting `/api/content/site_config`.
 3. The Express Backend analyzes structural `site_config.json` instructions. 
 4. The system iterates returning dedicated JSON manifests for individual active pages.
 5. The React App orchestrates the dynamic hierarchy via specific UI Section configurations utilizing global Tailwind colors and dynamic GSAP instances.
@@ -114,64 +116,27 @@ The core design philosophy rests heavily on absolute user mutability. Using the 
 
 ---
 
-## Environment Variables
-
-### Required (Production)
-
-| Variable | Description | Example |
-| :--- | :--- | :--- |
-| `GCS_BUCKET` | The Google Cloud Storage bucket tracking your media. | `card-portfolio-content` |
-| `ADMIN_PASSWORD` | The password required to manipulate the CMS. | `[Redacted]` |
-
-*(In local environments lacking an overarching `GCS_BUCKET` configuration, `server/config.js` intelligently forces Local Fallbacks mapping images and configs straight toward the `src/content/` files.)*
-
----
-
-## Available Scripts
-
-| Command | Description |
-| :--- | :--- |
-| `npm run dev` | Spins up both Vite (Frontend) and Express (API) contexts concurrently with pretty logging loops. |
-| `npm run build` | Compiles a production-grade Vite payload outputted dynamically mapped against `tsc`. |
-| `npm run start` | Activates solely the Express payload instance. Utilized heavily inside the Docker Runtime. |
-| `npm run lint` | Fires standard formatting analysis using ESLint |
-
----
-
 ## Deployment
 
 The platform embraces a multi-stage Docker container natively executing inside **Google Cloud Run** with images handled through **Artifact Registry**.
 
 ### Automated Deployments (GitHub Actions)
 
-Deployments are strictly automated via GitHub `.github/workflows/deploy.yml`. 
+Deployments are strictly automated via the GitHub `.github/workflows/deploy.yml` pipeline. 
 
-Your GitHub repository must configure:
-1. `WIF_PROVIDER` (Google Cloud Workload Identity Federation configuration)
-2. `WIF_SERVICE_ACCOUNT` (Authorized IAM Email mapping your pipeline)
-3. `ADMIN_PASSWORD` as a repository secret
+Your GitHub repository relies heavily on:
+1. **WIF_PROVIDER** (Google Cloud Workload Identity Federation configuration)
+2. **WIF_SERVICE_ACCOUNT** (Authorized IAM Email mapping your pipeline)
+3. **ADMIN_PASSWORD** (As a repository secret for production dashboard access)
 
-The pipeline will trigger automatically upon updating `main`:
-
-```yaml
-# Step example in deploy.yml
-- name: Deploy to Cloud Run
-  run: |
-    gcloud run deploy ${{ env.SERVICE_NAME }} \
-      --image "$IMAGE" \
-      --region ${{ env.REGION }} \
-      --platform managed \
-      --allow-unauthenticated \
-      --set-env-vars "GCS_BUCKET=card-portfolio-content,ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" \
-      --project ${{ env.PROJECT_ID }}
-```
+The pipeline will trigger automatically upon updating the `main` branch. It will construct a Docker image from the source code, push to GCP Artifact Registry, and launch a fast managed container onto Cloud Run.
 
 ### Manual Docker Validation
 
 You can validate exactly what Cloud Run executes locally. 
 
 ```bash
-# Build the payload
+# Build the production payload
 docker build -t card/portfolio .
 
 # Execute isolated inside port 8080 targeting purely simulated Production flags
@@ -184,8 +149,8 @@ docker run -p 8080:8080 -e NODE_ENV=production -e ADMIN_PASSWORD=localtest card/
 
 ### Uploads Fail via Admin Panel
 **Error:** `Failed to read or write local configurations. API routes return 500.`
-**Solution:** Check local disk permissions for the user account inside the underlying `public/uploads` directory. The multer proxy demands standard `r/w` disk authorization unless routing purely toward a mapped `GCS_BUCKET`.
+**Solution:** Check local disk permissions for the user account inside the underlying `public/uploads` directory. The multer proxy demands standard `r/w` disk authorization unless routing purely toward a mapped `GCS_BUCKET` on production.
 
 ### Cloud Run Container Fails to Build
 **Error:** `Cannot find module dependencies or missing dev rules.`
-**Solution:** Check `server/index.js` pathing. Ensure the Express layer correctly targets fallback dependencies in a post-build environment. Note the Dockerfile strips developer dependencies `npm ci --omit=dev`, therefore your project must ensure frontend UI requirements compile thoroughly inside the `builder` stage layer safely inside the `dist` array.
+**Solution:** Check `server/index.js` pathing. Ensure the Express layer correctly targets fallback dependencies in a post-build environment. Note the Dockerfile strips developer dependencies (`npm ci --omit=dev`), therefore your project must ensure frontend UI requirements compile thoroughly inside the `builder` stage layer safely inside the `dist` array.
