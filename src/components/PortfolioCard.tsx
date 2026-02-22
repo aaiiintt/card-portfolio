@@ -35,7 +35,7 @@ export function PortfolioCard({
           color: getContrastTextColor(accentColor)
         }}
       >
-        {id ? `${id}: ${title}` : title}
+        {title}
       </div>
 
       {/* Dashed divider */}

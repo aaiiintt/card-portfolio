@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "josie-gameboy-portfolio",
+			"path": "."
+		},
+		{
+			"name": "app",
+			"path": "../../Downloads/app"
+		}
+	],
+	"settings": {}
+}
